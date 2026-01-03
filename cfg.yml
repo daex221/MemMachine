@@ -27,18 +27,18 @@ resources:
     postgres_db:
       provider: postgres
       config:
-        host: ${POSTGRES_HOST}
-        port: ${POSTGRES_PORT}
-        user: ${POSTGRES_USER}
-        password: ${POSTGRES_PASSWORD}
-        db_name: ${POSTGRES_DB}
+        host: $POSTGRES_HOST
+        port: 5432
+        user: $POSTGRES_USER
+        password: $POSTGRES_PASSWORD
+        db_name: $POSTGRES_DB
 
   embedders:
     openai_embedder:
       provider: openai
       config:
         model: "text-embedding-3-small"
-        api_key: ${OPENAI_API_KEY}
+        api_key: $OPENAI_API_KEY
         base_url: "https://api.openai.com/v1"
         dimensions: 1536
 
@@ -47,7 +47,7 @@ resources:
       provider: openai-responses
       config:
         model: "gpt-4o-mini"
-        api_key: ${OPENAI_API_KEY}
+        api_key: $OPENAI_API_KEY
         base_url: "https://api.openai.com/v1"
 
   rerankers:
