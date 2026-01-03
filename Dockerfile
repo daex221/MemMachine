@@ -66,8 +66,9 @@ WORKDIR /app
 # Copy the environment from the builder stage
 COPY --from=builder /app/.venv /app/.venv
 
-# Copy configuration file
-COPY --from=builder /app/cfg.yml /app/cfg.yml
+# Copy config generation script
+COPY --from=builder /app/generate-config.sh /app/generate-config.sh
+RUN chmod +x /app/generate-config.sh
 
 # Set the PATH to include the virtual environment's bin directory
 ENV PATH="/app/.venv/bin:$PATH"
@@ -81,4 +82,4 @@ RUN python -c "import nltk, sys; \
 ENV HOST=0.0.0.0
 
 EXPOSE 8080
-CMD ["sh", "-c", "memmachine-server"]
+CMD ["/app/generate-config.sh"]
