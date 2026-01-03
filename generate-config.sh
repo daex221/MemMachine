@@ -1,6 +1,12 @@
 #!/bin/bash
 # Generate cfg.yml from environment variables at runtime
 
+echo "=== Generating config from environment variables ==="
+echo "POSTGRES_HOST: ${POSTGRES_HOST:-NOT_SET}"
+echo "POSTGRES_USER: ${POSTGRES_USER:-NOT_SET}"
+echo "POSTGRES_DB: ${POSTGRES_DB:-NOT_SET}"
+echo "OPENAI_API_KEY: ${OPENAI_API_KEY:0:20}..." # Show first 20 chars only
+
 cat > /app/cfg.yml <<EOF
 logging:
   path: memmachine.log
@@ -66,6 +72,9 @@ resources:
     bm25_ranker:
       provider: "bm25"
 EOF
+
+echo "=== Config file generated at /app/cfg.yml ==="
+echo "=== Starting MemMachine server ==="
 
 # Run the server
 exec memmachine-server
