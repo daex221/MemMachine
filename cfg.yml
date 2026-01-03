@@ -1,73 +1,63 @@
+logging:
+  path: memmachine.log
+  level: info
 
-# Mememachine Configuration for Render Deployment
-# Save this as configuration.yml in the Mememachine repository root
+episode_store:
+  database: postgres_db
 
-resources:
-  # Database Configuration
-  databases:
-    postgres:
-      provider: postgres
-      host: ${POSTGRES_HOST}  # Will be replaced with env var
-      port: 5432
-      user: ${POSTGRES_USER}
-      password: ${POSTGRES_PASSWORD}
-      db_name: ${POSTGRES_DB}
-
-  # Language Models (OpenAI)
-  language_models:
-    openai_model:
-      provider: openai
-      api_key: ${OPENAI_API_KEY}
-      model: "gpt-4o-mini"
-      base_url: "https://api.openai.com/v1"
-      temperature: 0.7
-      max_tokens: 2000
-
-  # Embedders (OpenAI)
-  embedders:
-    openai_embedder:
-      provider: openai
-      api_key: ${OPENAI_API_KEY}
-      model: "text-embedding-3-small"
-      base_url: "https://api.openai.com/v1"
-      dimensions: 1536
-
-  # Rerankers
-  rerankers:
-    rrf_reranker:
-      provider: rrf
-      k: 60
-
-# Episodic Memory Configuration (Conversations)
 episodic_memory:
+  long_term_memory:
+    embedder: openai_embedder
+    reranker: rrf_reranker
+    vector_graph_store: postgres_db
   short_term_memory:
     llm_model: openai_model
-    capacity: 10
-    store_in_graph: true
+    message_capacity: 500
 
-  long_term_memory:
-    enabled: true
-    embedder: openai_embedder
-    summarization_threshold: 5
-
-# Semantic Memory Configuration (Facts & Learnings)
 semantic_memory:
   llm_model: openai_model
   embedding_model: openai_embedder
-  enabled: true
+  database: postgres_db
 
-# Storage Configuration
-storage:
-  vector_graph_store:
-    vendor_name: postgres
-    host: ${POSTGRES_HOST}
-    port: 5432
-    user: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
-    db_name: ${POSTGRES_DB}
+session_manager:
+  database: postgres_db
 
-# Server Configuration
-server:
-  host: 0.0.0.0
-  port: 8080
-  log_level: info
+resources:
+  databases:
+    postgres_db:
+      provider: postgres
+      config:
+        host: ${POSTGRES_HOST}
+        port: ${POSTGRES_PORT}
+        user: ${POSTGRES_USER}
+        password: ${POSTGRES_PASSWORD}
+        db_name: ${POSTGRES_DB}
+
+  embedders:
+    openai_embedder:
+      provider: openai
+      config:
+        model: "text-embedding-3-small"
+        api_key: ${OPENAI_API_KEY}
+        base_url: "https://api.openai.com/v1"
+        dimensions: 1536
+
+  language_models:
+    openai_model:
+      provider: openai-responses
+      config:
+        model: "gpt-4o-mini"
+        api_key: ${OPENAI_API_KEY}
+        base_url: "https://api.openai.com/v1"
+
+  rerankers:
+    rrf_reranker:
+      provider: "rrf-hybrid"
+      config:
+        reranker_ids:
+          - identity_ranker
+          - bm25_ranker
+    identity_ranker:
+      provider: "identity"
+    bm25_ranker:
+      provider: "bm25"
