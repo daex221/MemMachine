@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: memmachine
+    runtime: docker
+    plan: free
+    envVars:
+      # Database connection (will be provided by Render PostgreSQL)
+      # Note: The cfg.yml file will be automatically discovered by the server
+      - key: POSTGRES_HOST
+        fromDatabase:
+          name: memmachine-db
+          property: host
+      - key: POSTGRES_PORT
+        fromDatabase:
+          name: memmachine-db
+          property: port
+      - key: POSTGRES_USER
+        fromDatabase:
+          name: memmachine-db
+          property: user
+      - key: POSTGRES_PASSWORD
+        fromDatabase:
+          name: memmachine-db
+          property: password
+      - key: POSTGRES_DB
+        fromDatabase:
+          name: memmachine-db
+          property: database
+
+      # OpenAI API Key (add this in Render dashboard)
+      - key: OPENAI_API_KEY
+        sync: false
+
+databases:
+  - name: memmachine-db
+    plan: free
+    databaseName: memmachine
+    user: memmachine
