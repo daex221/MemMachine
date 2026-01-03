@@ -66,6 +66,9 @@ WORKDIR /app
 # Copy the environment from the builder stage
 COPY --from=builder /app/.venv /app/.venv
 
+# Copy configuration file
+COPY --from=builder /app/cfg.yml /app/cfg.yml
+
 # Set the PATH to include the virtual environment's bin directory
 ENV PATH="/app/.venv/bin:$PATH"
 
